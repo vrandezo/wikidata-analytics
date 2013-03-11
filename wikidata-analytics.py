@@ -1,12 +1,16 @@
+#!/usr/bin/env python2
 import bz2, time
 
 print 'Calculating Wikidata stats'
 
 start_time = time.time()
 
+bots = ['BeneBot*', 'BetaBot', 'BinBot', 'Choboty', 'Dexbot', 'Hazard-Bot', 'Innocent bot', 'KLBot2', 'Legobot', 'MerlBot', 'MerlIwBot', 'Ra-bot-nik', 'Sk!dbot', 'ThieolBot', 'ValterVBot', 'ZaBOTka']
+
 linecount = 0
 pagecount = 0
 revisioncount = 0
+botrevisioncount = 0
 revisionsperitemcount = 0
 revisionsperitem = {}
 itemcount = 0
@@ -20,7 +24,7 @@ descriptioncount = 0
 item = False
 property = True
 
-file = bz2.BZ2File('wikidatawiki-20130228-pages-meta-history.xml.bz2')
+file = bz2.BZ2File('wikidatawiki-latest-pages-meta-history.xml.bz2')
 for line in file :
 	linecount += 1
 	if linecount % 1000000 == 0 : print linecount / 1000000
@@ -53,6 +57,10 @@ for line in file :
 	if line == '    <revision>\n' :
 		revisioncount += 1
 		revisionsperitemcount += 1
+	if line.startswith('        <username>') :
+		username = line[18:-12]
+		if username in bots:
+			botrevisioncount += 1
 	if line.startswith('      <timestamp>') :
 		timestamp = line[17:-23]
 	if line.startswith('    <title>') :
@@ -66,7 +74,7 @@ for line in file :
 				content = line[33:-8]
 				content = content.replace('&quot;', '"')
 				val = eval(content)
-	#if linecount >= 100000 : break
+	#if linecount >= 1000000 : break
 
 print itemcount, 'items'
 print itemswithclaims, 'items with claims'
@@ -78,6 +86,7 @@ print labelcount, 'labels'
 print descriptioncount, 'descriptions'
 print pagecount, 'pages'
 print revisioncount, 'revisions'
+print botrevisioncount, 'revisions edited by bot'
 print 'revisions per item', revisionsperitem
 print linecount, 'lines'
 
