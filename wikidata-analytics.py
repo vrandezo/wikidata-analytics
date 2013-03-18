@@ -38,7 +38,7 @@ title = ""
 item = False
 property = False
 
-file = bz2.BZ2File('wikidatawiki-latest-pages-meta-history.xml.bz2')
+file = bz2.BZ2File('data/dump20130316/pages-meta-history.xml.bz2')
 for line in file :
 	linecount += 1
 	if linecount % 1000000 == 0 : print linecount / 1000000

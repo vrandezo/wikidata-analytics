@@ -42,6 +42,7 @@ propertydescriptioncount = 0
 pagecount = 0
 revisioncount = 0
 processedpages = set()
+processedrevisions = set()
 
 # if there is no data directory, create one
 if not os.path.exists('data') :
@@ -56,7 +57,7 @@ for line in urllib.urlopen('http://dumps.wikimedia.org/wikidatawiki/') :
 	date = line[27:35]
 	if not re.match('\d\d\d\d\d\d\d\d', date) : continue
 	latestdump = date
-latestdump = '20130228' # TODO simply remove this line
+latestdump = '20130228' # TODO
 print 'Latest dump has been on', latestdump
 
 # download the latest stats if needed
@@ -87,6 +88,7 @@ for line in urllib.urlopen('http://dumps.wikimedia.org/other/incr/wikidatawiki/'
 	if not line.startswith('<tr><td class="n">') : continue
 	date = line[27:35]
 	if not re.match('\d\d\d\d\d\d\d\d', date) : continue
+	if (date > '20130315') : continue
 	dailies.append(date)
 
 # download the dailies in reversed order until the daily maxrevid is smaller than our maxrevid
@@ -145,8 +147,10 @@ def processfile(file) :
 	title = ''
 	item = False
 	property = False
-	new = False
+	newrev = False
+	newtitle = False
 	val = {}
+	revid = 0
 	
 	for line in file :
 		linecount += 1
@@ -158,22 +162,33 @@ def processfile(file) :
 			title = ''
 			item = False
 			property = False
-			new = False
+			newrev = False
+			newtitle = False
 			val = {}
 			content = ''
+			revid = 0
+
+		if line == '    <revision>\n' :
+			revid = 0
 
 		# title
 		if line.startswith('    <title>') :
 			title = line[11:-9]
-			if title not in processedpages :
-				new = True
-				processedpages.add(title)
 			item = title.startswith('Q')
 			property = title.startswith('Property:P')
+			if title not in processedpages :
+				newtitle = True
+				processedpages.add(title)
+
+		if line.startswith('      <id>') :
+			revid = line[10:-6]
+			if revid not in processedrevisions :
+				newrev = True
+				processedrevisions.add(revid)
 
 		# finished a page
 		if line == '  </page>\n' :
-			if not new : continue
+			if not newtitle : continue
 
 			if item or property :
 				content = content.replace('&quot;', '"')
@@ -213,11 +228,13 @@ def processfile(file) :
 				propertylabelcount += len(val['label'])
 				propertydescriptioncount += len(val['description'])
 
-		if line == '    <revision>\n' :
+		if line == '    </revision>\n' :
+			if not newrev : continue
 			revisioncount += 1
 			if item:
 				itemrevisioncount += 1
 		if line.startswith('        <username>') :
+			if not newrev : continue
 			username = line[18:-12]
 			if username in bots:
 				botrevisioncount += 1
