@@ -57,7 +57,6 @@ for line in urllib.urlopen('http://dumps.wikimedia.org/wikidatawiki/') :
 	date = line[27:35]
 	if not re.match('\d\d\d\d\d\d\d\d', date) : continue
 	latestdump = date
-latestdump = '20130228' # TODO
 print 'Latest dump has been on', latestdump
 
 # download the latest stats if needed
@@ -88,7 +87,6 @@ for line in urllib.urlopen('http://dumps.wikimedia.org/other/incr/wikidatawiki/'
 	if not line.startswith('<tr><td class="n">') : continue
 	date = line[27:35]
 	if not re.match('\d\d\d\d\d\d\d\d', date) : continue
-	if (date > '20130315') : continue
 	dailies.append(date)
 
 # download the dailies in reversed order until the daily maxrevid is smaller than our maxrevid
