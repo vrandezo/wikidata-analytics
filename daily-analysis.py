@@ -56,6 +56,10 @@ for line in urllib.urlopen('http://dumps.wikimedia.org/wikidatawiki/') :
 	if not line.startswith('<tr><td class="n">') : continue
 	date = line[27:35]
 	if not re.match('\d\d\d\d\d\d\d\d', date) : continue
+	# check if dump is finished
+	dump = urllib.urlopen('http://dumps.wikimedia.org/wikidatawiki/' + date + '/wikidatawiki-' + date + '-pages-meta-history.xml.bz2', 'pages-meta-history.xml.bz2')
+	if dump.info().gettype() == "text/html" : dump.close(); continue
+	dump.close()
 	latestdump = date
 print >> sys.stderr, 'Latest dump has been on', latestdump
 
