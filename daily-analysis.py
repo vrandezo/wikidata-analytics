@@ -1,18 +1,18 @@
 #!/usr/bin/env python2
-import bz2, time, gzip, os, urllib, re
+import sys, bz2, time, gzip, os, urllib, re
 
-print 'Calculating Wikidata stats'
+print >> sys.stderr, 'Calculating Wikidata stats'
 
 start_time = time.time()
 
 # read the list of bots
-print 'Loading list of bots'
+print >> sys.stderr, 'Loading list of bots'
 bots = []
 botsjson = urllib.urlopen('http://www.wikidata.org/w/api.php?action=query&list=allusers&augroup=bot&aulimit=500&format=json').read()
 botsjson = eval(botsjson)
 for bot in botsjson['query']['allusers'] :
 	bots.append(bot['name'])
-print 'List of bots:', bots
+print >> sys.stderr, 'List of bots:', bots
 
 linecount = 0
 charactercount = 0
@@ -50,25 +50,26 @@ if not os.path.exists('data') :
 os.chdir('data')
 
 # download the dumps directory file and figure out the date of the latest dump
-print 'Checking for the date of the last dump'
+print >> sys.stderr, 'Checking for the date of the last dump'
 latestdump = '20121026'
 for line in urllib.urlopen('http://dumps.wikimedia.org/wikidatawiki/') :
 	if not line.startswith('<tr><td class="n">') : continue
 	date = line[27:35]
 	if not re.match('\d\d\d\d\d\d\d\d', date) : continue
 	latestdump = date
-print 'Latest dump has been on', latestdump
+print >> sys.stderr, 'Latest dump has been on', latestdump
 
 # download the latest stats if needed
 if not os.path.exists('dump' + latestdump) :
 	os.makedirs('dump' + latestdump)
 os.chdir('dump' + latestdump)
 if not os.path.exists('site_stats.sql.gz') :
-	print 'Downloading stats of the latest dump'
+	print >> sys.stderr, 'Downloading stats of the latest dump'
 	urllib.urlretrieve('http://dumps.wikimedia.org/wikidatawiki/' + latestdump + '/wikidatawiki-' + latestdump + '-site_stats.sql.gz', 'site_stats.sql.gz')
+	
 # download the latest dump if needed
 if not os.path.exists('pages-meta-history.xml.bz2') :
-	print 'Downloading latest dump'
+	print >> sys.stderr, 'Downloading latest dump'
 	urllib.urlretrieve('http://dumps.wikimedia.org/wikidatawiki/' + latestdump + '/wikidatawiki-' + latestdump + '-pages-meta-history.xml.bz2', 'pages-meta-history.xml.bz2')
 
 # get the maxrevid of the latest dump
@@ -77,7 +78,7 @@ for line in gzip.open('site_stats.sql.gz'):
 	if not line.startswith('INSERT INTO') : continue
 	stats = eval(line[32:-2])
 	maxrevid = int(stats[2])
-print 'maxrevid of the latest dump:', maxrevid
+print >> sys.stderr, 'maxrevid of the latest dump:', maxrevid
 
 os.chdir('..')
 
@@ -92,7 +93,7 @@ for line in urllib.urlopen('http://dumps.wikimedia.org/other/incr/wikidatawiki/'
 # download the dailies in reversed order until the daily maxrevid is smaller than our maxrevid
 stopdaily = '20121026'
 for daily in reversed(dailies) :
-	print 'Checking daily of', daily
+	print >> sys.stderr, 'Checking daily of', daily
 	if not os.path.exists('daily' + daily) :
 		os.makedirs('daily' + daily)
 	os.chdir('daily' + daily)
@@ -100,17 +101,17 @@ for daily in reversed(dailies) :
 		urllib.urlretrieve('http://dumps.wikimedia.org/other/incr/wikidatawiki/' + daily + '/maxrevid.txt', 'maxrevid.txt')
 	dailymaxrevid = int(open('maxrevid.txt').read())
 	if dailymaxrevid < maxrevid :
-		print 'Daily', daily, 'is within latest dump'
+		print >> sys.stderr, 'Daily', daily, 'is within latest dump'
 		stopdaily = daily
 		os.chdir('..')
 		break
 	if not os.path.exists('pages-meta-hist-incr.xml.bz2') :
-		print 'Downloading daily', daily
+		print >> sys.stderr, 'Downloading daily', daily
 		if urllib.urlopen('http://dumps.wikimedia.org/other/incr/wikidatawiki/' + daily + '/status.txt').read() == 'done' :
 			urllib.urlretrieve('http://dumps.wikimedia.org/other/incr/wikidatawiki/' + daily + '/wikidatawiki-' + daily + '-pages-meta-hist-incr.xml.bz2', 'pages-meta-hist-incr.xml.bz2')
-			print 'Done downloading daily', daily
+			print >> sys.stderr, 'Done downloading daily', daily
 		else :
-			print 'Daily not done yet - download aborted'
+			print >> sys.stderr, 'Daily not done yet - download aborted'
 	os.chdir('..')
 
 def processfile(file) :
@@ -153,7 +154,7 @@ def processfile(file) :
 	for line in file :
 		linecount += 1
 		charactercount += len(line)
-		if linecount % 1000000 == 0 : print linecount / 1000000
+		if linecount % 1000000 == 0 : print >> sys.stderr, linecount / 1000000
 
 		# starts a new page
 		if line == '  <page>\n' :
@@ -243,7 +244,7 @@ def processfile(file) :
 		if line.startswith('      <text xml:space="preserve">') :
 			if item or property :
 				if not line.endswith('</text>\n') :
-					print line
+					print >> sys.stderr, line
 				else :
 					content = line[33:-8]
 		#if linecount >= 1000000 : break
@@ -252,10 +253,10 @@ def processfile(file) :
 files = 0
 for daily in reversed(dailies) :
 	if daily == stopdaily : break
-	print 'Analysing daily', daily
+	print >> sys.stderr, 'Analysing daily', daily
 	os.chdir('daily' + daily)
 	if not os.path.exists('pages-meta-hist-incr.xml.bz2') :
-		print 'No data available'
+		print >> sys.stderr, 'No data available'
 		os.chdir('..')
 		continue
 	file = bz2.BZ2File('pages-meta-hist-incr.xml.bz2')
@@ -265,7 +266,7 @@ for daily in reversed(dailies) :
 	os.chdir('..')
 
 # process the dump
-print "Analysing dump", latestdump
+print >> sys.stderr, "Analysing dump", latestdump
 os.chdir('dump' + latestdump)
 file = bz2.BZ2File('pages-meta-history.xml.bz2')
 processfile(file)
@@ -295,4 +296,4 @@ print linecount, 'lines'
 print charactercount, 'characters'
 
 print time.time() - start_time, 'seconds'
-print 'Done.'
+print >> sys.stderr, 'Done.'
