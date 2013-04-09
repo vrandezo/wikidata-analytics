@@ -17,7 +17,8 @@ set terminal 'svg'
 set output 'claimsperitem.svg' 
 
 plot 'results/claimsperitem-Feb28' with lines title "28. Feb", \
-     'results/claimsperitem-Mar16' with lines title "16. Mar"
+     'results/claimsperitem-Mar16' with lines title "16. Mar", \
+     'results/claimsperitem-Apr02' with lines title "02. Apr"
 
 unset output
 
