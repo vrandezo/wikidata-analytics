@@ -80,6 +80,7 @@ os.chdir('dump' + latestdump)
 if not os.path.exists('site_stats.sql.gz') :
 	log('Downloading stats of the latest dump')
 	urllib.urlretrieve('http://dumps.wikimedia.org/wikidatawiki/' + latestdump + '/wikidatawiki-' + latestdump + '-site_stats.sql.gz', 'site_stats.sql.gz')
+	
 # download the latest dump if needed
 if not os.path.exists('pages-meta-history.xml.bz2') :
 	log('Downloading latest dump')
@@ -345,7 +346,7 @@ log(str(langdescriptions))
 log(str(propertydescriptioncount) + ' descriptions (of properties)')
 log(str(revisioncount) + ' revisions')
 log(str(itemrevisioncount) + ' revisions of items')
-print botrevisioncount, 'revisions edited by bot'
+log(str(botrevisioncount) + 'revisions edited by bot')
 log(str(linecount) + ' lines')
 log(str(charactercount) + ' characters')
 

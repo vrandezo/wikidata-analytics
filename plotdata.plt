@@ -16,8 +16,10 @@ set xrange [0:40]
 set terminal 'svg'
 set output 'claimsperitem.svg' 
 
-plot 'results/claimsperitem-Feb28' with lines title "28. Feb", \
-     'results/claimsperitem-Mar16' with lines title "16. Mar"
+plot 'results/claimsperitem-Feb28' smooth uniq with lines title "28. Feb", \
+     'results/claimsperitem-Mar16' smooth uniq with lines title "16. Mar", \
+     'results/claimsperitem-Apr02' smooth uniq with lines title "02. Apr", \
+     'results/claimsperitem-Apr30' smooth uniq with lines title "30. Apr"
 
 unset output
 
