@@ -1,6 +1,9 @@
 #!/usr/bin/env python2
 import sys, bz2, time, gzip, os, urllib, re
 
+# This scripts creates the knowledge base and collects a few numbers by going through
+# all dailies up to and the latest available dump. This usually runs a few hours.
+
 def log(txt) :
 	print txt
 
@@ -298,6 +301,7 @@ def processfile(file) :
 		#if linecount >= 1000000 : break
 
 kb = open('kb.txt', 'w')
+kb.write('# ' + lastdaily + "\n")
 dic = dict()
 for lang in langs:
 	dic[lang] = open('dict-' + lang + '.txt', 'w')
@@ -331,7 +335,11 @@ for lang in langs:
 
 os.chdir('..')
 
-output = open('data/analysis.html')
+# if there is no results directory, create one
+if not os.path.exists('results') :
+	os.makedirs('results')
+
+output = open('results/daily.html', 'w')
 output.write('<!doctype html>' + "\n")
 output.write('<html>' + "\n")
 output.write(' <head>' + "\n")
