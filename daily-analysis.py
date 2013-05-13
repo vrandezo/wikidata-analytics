@@ -65,13 +65,18 @@ for line in urllib.urlopen('http://dumps.wikimedia.org/wikidatawiki/') :
 	if not line.startswith('<tr><td class="n">') : continue
 	date = line[27:35]
 	if not re.match('\d\d\d\d\d\d\d\d', date) : continue
+	log("Checking dump of " + date)
 	# check if dump is finished
-	dump = urllib.urlopen('http://dumps.wikimedia.org/wikidatawiki/' + date + '/wikidatawiki-' + date + '-pages-meta-history.xml.bz2', 'pages-meta-history.xml.bz2')
-	if dump.info().gettype() == "text/html" : dump.close(); continue
-	dump.close()
-	latestdump = date
+	finished = False
+	for md5 in urllib.urlopen('http://dumps.wikimedia.org/wikidatawiki/' + date + '/wikidatawiki-' + date + '-md5sums.txt') :
+		if md5.endswith('-pages-meta-history.xml.bz2' + "\n") :
+			finished = True
+	if finished :
+		latestdump = date
 log('Latest dump has been on ' + latestdump)
 #latestdump = '20130417'
+
+exit()
 
 # download the latest stats if needed
 if not os.path.exists('dump' + latestdump) :
