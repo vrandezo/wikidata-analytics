@@ -107,7 +107,7 @@ for line in urllib.urlopen('http://dumps.wikimedia.org/other/incr/wikidatawiki/'
 # download the dailies in reversed order until the daily maxrevid is smaller than our maxrevid
 stopdaily = '20121026'
 lastdaily = 0
-for daily in reversed(dailies) ;
+for daily in reversed(dailies) :
 	log('Checking daily of ' + daily)
 	if not os.path.exists('daily' + daily) :
 		os.makedirs('daily' + daily)
