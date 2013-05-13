@@ -106,7 +106,8 @@ for line in urllib.urlopen('http://dumps.wikimedia.org/other/incr/wikidatawiki/'
 
 # download the dailies in reversed order until the daily maxrevid is smaller than our maxrevid
 stopdaily = '20121026'
-for daily in reversed(dailies) :
+lastdaily = 0
+for daily in reversed(dailies) ;
 	log('Checking daily of ' + daily)
 	if not os.path.exists('daily' + daily) :
 		os.makedirs('daily' + daily)
@@ -124,6 +125,7 @@ for daily in reversed(dailies) :
 		if urllib.urlopen('http://dumps.wikimedia.org/other/incr/wikidatawiki/' + daily + '/status.txt').read() == 'done' :
 			urllib.urlretrieve('http://dumps.wikimedia.org/other/incr/wikidatawiki/' + daily + '/wikidatawiki-' + daily + '-pages-meta-hist-incr.xml.bz2', 'pages-meta-hist-incr.xml.bz2')
 			log('Done downloading daily ' + daily)
+			if lastdaily == 0 : lastdaily = daily
 		else :
 			log('Daily not done yet - download aborted')
 	os.chdir('..')
@@ -251,13 +253,13 @@ def processfile(file) :
 						claim = claim['m']
 						if claim[0] == 'value' :
 							if claim[2] == 'wikibase-entityid' :
-								kb.write(title + ' P' + str(claim[1]) + ' Q' + str(claim[3]['numeric-id']) + "\n")
+								kb.write(title + ' P' + str(claim[1]) + ' Q' + str(claim[3]['numeric-id']) + " .\n")
 							elif claim[2] == 'string' :
-								kb.write(title + ' P' + str(claim[1]) + " '" + claim[3] + "'\n")
+								kb.write(title + ' P' + str(claim[1]) + " {" + claim[3] + "} .\n")
 						elif claim[0] == 'somevalue' :
-							kb.write(title + ' P' + str(claim[1]) + " some\n")
+							kb.write(title + ' P' + str(claim[1]) + " + .\n")
 						elif claim[0] == 'novalue' :
-							kb.write(title + ' P' + str(claim[1]) + " none\n")
+							kb.write(title + ' P' + str(claim[1]) + " - .\n")
 						else :
 							log(claim)
 							exit()
@@ -326,29 +328,45 @@ for lang in langs:
 
 os.chdir('..')
 
-log(str(len(processedpages)) + ' pages')
-log(str(itemcount) + ' items')
-log(str(itemswithclaims) + ' items with claims')
-log(str(claimcount) + ' claims')
-log('claims per item ' + str(claimsperitem))
-log(str(refs) + ' refs')
-log(str(claimswithrefs) + ' claims with refs')
-log(str(itemswithrefs) + ' items with refs')
-log(str('item with most claims: ' + str(titleofmostclaims))
-log(str(propertycount) + ' properties')
-log(str(sitelinkcount) + ' links')
-log(str(langsitelinks))
-log(str(labelcount) + ' labels')
-log(str(langlabels))
-log(str(propertylabelcount) + 'labels (of properties)')
-log(descriptioncount + ' descriptions')
-log(str(langdescriptions))
-log(str(propertydescriptioncount) + ' descriptions (of properties)')
-log(str(revisioncount) + ' revisions')
-log(str(itemrevisioncount) + ' revisions of items')
-log(str(botrevisioncount) + 'revisions edited by bot')
-log(str(linecount) + ' lines')
-log(str(charactercount) + ' characters')
+output = open('data/analysis.html')
+output.write('<!doctype html>' + "\n")
+output.write('<html>' + "\n")
+output.write(' <head>' + "\n")
+output.write('  <meta charset="utf-8">' + "\n")
+output.write('  <title>Analysis results</title>' + "\n")
+output.write('  <link rel="stylesheet" href="analysis.css" />' + "\n")
+output.write(' </head>' + "\n")
+output.write(' <body>' + "\n")
+output.write('  <h1>Analysis results on the Wikidata dump</h1>' + "\n")
+output.write('  <p>' + "\n")
+output.write('   As of: ' + lastdaily + '<br>' + "\n")
+output.write('   Pages: ' + str(len(processedpages)) + '<br>' + "\n")
+output.write('   Items: ' + str(itemcount) + '<br>' + "\n")
+output.write('   Items with claims: ' + str(itemswithclaims) + '<br>' + "\n")
+output.write('   Claims: ' + str(claimcount) + '<br>' + "\n")
+output.write('   Claims per item: ' + str(claimsperitem) + '<br>' + "\n")
+output.write('   References: ' + str(refs) + '<br>' + "\n")
+output.write('   Claims with references: ' + str(claimswithrefs) + '<br>' + "\n")
+output.write('   Items with references: ' + str(itemswithrefs) + '<br>' + "\n")
+output.write('   Item with most claims: ' + titleofmostclaims + '<br>' + "\n")
+output.write('   Properties: ' + str(propertycount) + '<br>' + "\n")
+output.write('   Links: ' + str(sitelinkcount) + '<br>' + "\n")
+output.write('   Links per language: ' + str(langsitelinks) + '<br>' + "\n")
+output.write('   Labels: ' + str(labelcount) + '<br>' + "\n")
+output.write('   Labels per language: ' + str(langlabels) + '<br>' + "\n")
+output.write('   Labels of properties: ' + str(propertylabelcount) + '<br>' + "\n")
+output.write('   Descriptions: ' + str(descriptioncount) + '<br>' + "\n")
+output.write('   Descriptions per language: ' + str(langdescriptions) + '<br>' + "\n")
+output.write('   Descriptions of properties: ' + str(propertydescriptioncount) + '<br>' + "\n")
+output.write('   Revisions: ' + str(revisioncount) + '<br>' + "\n")
+output.write('   Item revisions: ' + str(itemrevisioncount) + '<br>' + "\n")
+output.write('   Bot revisions: ' + str(botrevisioncount) + '<br>' + "\n")
+output.write('   Lines: ' + str(linecount) + '<br>' + "\n")
+output.write('   Characters: ' + str(charactercount) + '<br>' + "\n")
+output.write('   Time: ' + str(time.time() - start_time) + ' seconds<br>' + "\n")
+output.write('  </p>' + "\n")
+output.write(' </body>' + "\n")
+output.write('</html>' + "\n")
+output.close()
 
-log(str(time.time() - start_time) + ' seconds')
 log('Done.')
