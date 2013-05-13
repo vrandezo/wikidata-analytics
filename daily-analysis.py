@@ -76,8 +76,6 @@ for line in urllib.urlopen('http://dumps.wikimedia.org/wikidatawiki/') :
 log('Latest dump has been on ' + latestdump)
 #latestdump = '20130417'
 
-exit()
-
 # download the latest stats if needed
 if not os.path.exists('dump' + latestdump) :
 	os.makedirs('dump' + latestdump)
