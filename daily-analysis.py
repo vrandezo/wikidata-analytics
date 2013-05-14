@@ -133,6 +133,23 @@ for daily in reversed(dailies) :
 			log('Daily not done yet - download aborted')
 	os.chdir('..')
 
+def snaktotext(snak) :
+	if snak[0] == 'value' :
+		if snak[2] == 'wikibase-entityid' :
+			return 'P' + str(snak[1]) + ' Q' + str(snak[3]['numeric-id'])
+		elif snak[2] == 'string' :
+			return 'P' + str(snak[1]) + ' {' + snak[3] + '}'
+		else :
+			log(snak)
+			exit()
+	elif snak[0] == 'somevalue' :
+		return 'P' + str(snak[1]) + ' +'
+	elif snak[0] == 'novalue' :
+		return 'P' + str(snak[1]) + ' -'
+	else :
+		log(snak)
+		exit()
+
 def processfile(file) :
 	global linecount
 	global charactercount
@@ -230,19 +247,19 @@ def processfile(file) :
 
 			if item :
 				itemcount += 1
-				if len(val['links']) > 0 :
+				if 'links' in val and len(val['links']) > 0 :
 					sitelinkcount += len(val['links'])
 					for lang in val['links'].keys() :
 						if lang not in langsitelinks :
 							langsitelinks[lang] = 0
 						langsitelinks[lang] += 1
-				if len(val['label']) > 0 :
+				if 'label' in val and len(val['label']) > 0 :
 					labelcount += len(val['label'])
 					for lang in val['label'].keys() :
 						if lang not in langlabels :
 							langlabels[lang] = 0
 						langlabels[lang] += 1
-				if len(val['description']) > 0 :
+				if 'description' in val and len(val['description']) > 0 :
 					descriptioncount += len(val['description'])
 					for lang in val['description'].keys() :
 						if lang not in langdescriptions :
@@ -266,19 +283,22 @@ def processfile(file) :
 					claimsperitem[numberofclaims] += 1
 				if 'claims' in val and len(val['claims']) > 0 :
 					for claim in val['claims'] :
-						claim = claim['m']
-						if claim[0] == 'value' :
-							if claim[2] == 'wikibase-entityid' :
-								kb.write(title + ' P' + str(claim[1]) + ' Q' + str(claim[3]['numeric-id']) + " .\n")
-							elif claim[2] == 'string' :
-								kb.write(title + ' P' + str(claim[1]) + " {" + claim[3] + "} .\n")
-						elif claim[0] == 'somevalue' :
-							kb.write(title + ' P' + str(claim[1]) + " + .\n")
-						elif claim[0] == 'novalue' :
-							kb.write(title + ' P' + str(claim[1]) + " - .\n")
-						else :
-							log(claim)
-							exit()
+						quals = ''
+						if (len(claim['q']) + len(claim['refs'])) > 0 :
+							if (len(claim['q']) > 0) :
+								for q in claim['q'] :
+									quals += '  ' + snaktotext(q) + ",\n"
+							if (len(claim['refs']) > 0) :
+								for ref in claim['refs'] :
+									quals += "  reference {\n"
+									for r in ref :
+										quals += '    ' + snaktotext(r) + ",\n"
+									quals += "  },\n"
+							quals = " (\n" + quals + ' )'
+							
+						snak = snaktotext(claim['m'])
+						kb.write(title + ' ' + snak + quals + " .\n")
+
 			if property :
 				propertycount += 1
 				propertylabelcount += len(val['label'])
@@ -304,10 +324,10 @@ def processfile(file) :
 					log(line)
 				else :
 					content = line[33:-8]
-		if linecount >= 1000000 : break
+		#if linecount >= 1000000 : break #XXX 
 
 kb = open('kb.txt', 'w')
-kb.write('# ' + lastdaily + "\n")
+kb.write('# ' + str(lastdaily) + "\n")
 
 # process the dailies, starting with the newest
 files = 0	
