@@ -11,9 +11,6 @@ log('Calculating Wikidata stats')
 
 start_time = time.time()
 
-# for dictionary creation
-langs = [ 'en', 'de', 'hr', 'uz' ]
-
 # read the list of bots
 log('Loading list of bots')
 bots = []
@@ -217,6 +214,19 @@ def processfile(file) :
 			if item or property :
 				content = content.replace('&quot;', '"')
 				val = eval(content)
+				if len(val['label']) > 0 :
+					for lang in val['label'].keys() :
+						kb.write(title + ' label {' + lang + ':' + val['label'][lang] + "} .\n")
+				if len(val['description']) > 0 :
+					for lang in val['description'].keys() :
+						kb.write(title + ' description {' + lang + ':' + val['description'][lang] + "} .\n")
+				if len(val['links']) > 0 :
+					for lang in val['links'].keys() :
+						kb.write(title + ' link {' + lang + ':' + val['links'][lang] + "} .\n")
+				if len(val['aliases']) > 0 :
+					for lang in val['aliases'].keys() :
+						for alias in val['aliases'][lang] :
+							kb.write(title + ' alias {' + lang + ':' + alias + "} .\n")
 
 			if item :
 				itemcount += 1
@@ -269,10 +279,6 @@ def processfile(file) :
 						else :
 							log(claim)
 							exit()
-				if len(val['label']) > 0 :
-					for lang in langs :
-						if lang in val['label'] :
-							dic[lang].write(title + ' ' + val['label'][lang] + "\n")
 			if property :
 				propertycount += 1
 				propertylabelcount += len(val['label'])
@@ -298,16 +304,13 @@ def processfile(file) :
 					log(line)
 				else :
 					content = line[33:-8]
-		#if linecount >= 1000000 : break
+		if linecount >= 1000000 : break
 
 kb = open('kb.txt', 'w')
 kb.write('# ' + lastdaily + "\n")
-dic = dict()
-for lang in langs:
-	dic[lang] = open('dict-' + lang + '.txt', 'w')
 
 # process the dailies, starting with the newest
-files = 0
+files = 0	
 for daily in reversed(dailies) :
 	if daily == stopdaily : break
 	log('Analysing daily ' + daily)
@@ -330,8 +333,6 @@ processfile(file)
 os.chdir('..')
 
 kb.close()
-for lang in langs:
-	dic[lang].close()
 
 os.chdir('..')
 
