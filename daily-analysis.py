@@ -1,5 +1,5 @@
 #!/usr/bin/env python2
-import sys, bz2, time, gzip, os, urllib, re
+import sys, bz2, time, gzip, os, urllib, re, bitarray
 
 # This scripts creates the knowledge base and collects a few numbers by going through
 # all dailies up to and the latest available dump. This usually runs a few hours.
@@ -50,8 +50,12 @@ propertydescriptioncount = 0
 # General
 pagecount = 0
 revisioncount = 0
-processedpages = set()
-processedrevisions = set()
+processeditems = bitarray.bitarray(2**26) # about 30 M items
+processeditems.setall(0)
+processedrevisions = bitarray.bitarray(2**28) # about 250 M revisions
+processedrevisions.setall(0)
+processedproperties = bitarray.bitarray(2**10) # about 1 K properties
+processedproperties.setall(0)
 
 # if there is no data directory, create one
 if not os.path.exists('data') :
@@ -215,15 +219,20 @@ def processfile(file) :
 			title = line[11:-9]
 			item = title.startswith('Q')
 			property = title.startswith('Property:P')
-			if title not in processedpages :
+			if item and not processeditems[int(title[1:])] :
 				newtitle = True
-				processedpages.add(title)
+				processeditems[int(title[1:])] = True
+			if property and not processedproperties[int(title[10:])] :
+				newtitle = True
+				processedproperties[int(title[10:])] = True
 
 		if line.startswith('      <id>') :
 			revid = line[10:-6]
-			if revid not in processedrevisions :
+			if not processedrevisions[int(revid)] :
 				newrev = True
-				processedrevisions.add(revid)
+				processedrevisions[int(revid)] = True
+			else :
+				log(revid + ' was a double revision')
 
 		# finished a page
 		if line == '  </page>\n' :
@@ -373,7 +382,6 @@ output.write(' <body>' + "\n")
 output.write('  <h1>Analysis results on the Wikidata dump</h1>' + "\n")
 output.write('  <p>' + "\n")
 output.write('   As of: ' + str(lastdaily) + '<br>' + "\n")
-output.write('   Pages: ' + str(len(processedpages)) + '<br>' + "\n")
 output.write('   Items: ' + str(itemcount) + '<br>' + "\n")
 output.write('   Items with claims: ' + str(itemswithclaims) + '<br>' + "\n")
 output.write('   Claims: ' + str(claimcount) + '<br>' + "\n")
