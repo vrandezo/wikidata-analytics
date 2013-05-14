@@ -87,7 +87,7 @@ if not os.path.exists('site_stats.sql.gz') :
 # download the latest dump if needed
 if not os.path.exists('pages-meta-history.xml.bz2') :
 	log('Downloading latest dump')
-	#xxx urllib.urlretrieve('http://dumps.wikimedia.org/wikidatawiki/' + latestdump + '/wikidatawiki-' + latestdump + '-pages-meta-history.xml.bz2', 'pages-meta-history.xml.bz2') #xxx
+	urllib.urlretrieve('http://dumps.wikimedia.org/wikidatawiki/' + latestdump + '/wikidatawiki-' + latestdump + '-pages-meta-history.xml.bz2', 'pages-meta-history.xml.bz2') #xxx
 
 # get the maxrevid of the latest dump
 maxrevid = 0
@@ -126,7 +126,7 @@ for daily in reversed(dailies) :
 	if not os.path.exists('pages-meta-hist-incr.xml.bz2') :
 		log('Downloading daily ' + daily)
 		if urllib.urlopen('http://dumps.wikimedia.org/other/incr/wikidatawiki/' + daily + '/status.txt').read() == 'done' :
-			#xxx urllib.urlretrieve('http://dumps.wikimedia.org/other/incr/wikidatawiki/' + daily + '/wikidatawiki-' + daily + '-pages-meta-hist-incr.xml.bz2', 'pages-meta-hist-incr.xml.bz2') #xxx
+			urllib.urlretrieve('http://dumps.wikimedia.org/other/incr/wikidatawiki/' + daily + '/wikidatawiki-' + daily + '-pages-meta-hist-incr.xml.bz2', 'pages-meta-hist-incr.xml.bz2') #xxx
 			log('Done downloading daily ' + daily)
 			if lastdaily == 0 :
 				lastdaily = daily
@@ -325,7 +325,7 @@ def processfile(file) :
 					log(line)
 				else :
 					content = line[33:-8]
-		if linecount >= 1000000 : break #xxx
+		#if linecount >= 1000000 : break #xxx
 
 kb = open('kb.txt', 'w')
 kb.write('# ' + str(lastdaily) + "\n")
