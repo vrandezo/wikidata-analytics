@@ -87,7 +87,7 @@ if not os.path.exists('site_stats.sql.gz') :
 # download the latest dump if needed
 if not os.path.exists('pages-meta-history.xml.bz2') :
 	log('Downloading latest dump')
-	urllib.urlretrieve('http://dumps.wikimedia.org/wikidatawiki/' + latestdump + '/wikidatawiki-' + latestdump + '-pages-meta-history.xml.bz2', 'pages-meta-history.xml.bz2')
+	#xxx urllib.urlretrieve('http://dumps.wikimedia.org/wikidatawiki/' + latestdump + '/wikidatawiki-' + latestdump + '-pages-meta-history.xml.bz2', 'pages-meta-history.xml.bz2') #xxx
 
 # get the maxrevid of the latest dump
 maxrevid = 0
@@ -126,9 +126,10 @@ for daily in reversed(dailies) :
 	if not os.path.exists('pages-meta-hist-incr.xml.bz2') :
 		log('Downloading daily ' + daily)
 		if urllib.urlopen('http://dumps.wikimedia.org/other/incr/wikidatawiki/' + daily + '/status.txt').read() == 'done' :
-			urllib.urlretrieve('http://dumps.wikimedia.org/other/incr/wikidatawiki/' + daily + '/wikidatawiki-' + daily + '-pages-meta-hist-incr.xml.bz2', 'pages-meta-hist-incr.xml.bz2')
+			#xxx urllib.urlretrieve('http://dumps.wikimedia.org/other/incr/wikidatawiki/' + daily + '/wikidatawiki-' + daily + '-pages-meta-hist-incr.xml.bz2', 'pages-meta-hist-incr.xml.bz2') #xxx
 			log('Done downloading daily ' + daily)
-			if lastdaily == 0 : lastdaily = daily
+			if lastdaily == 0 :
+				lastdaily = daily
 		else :
 			log('Daily not done yet - download aborted')
 	os.chdir('..')
@@ -231,16 +232,16 @@ def processfile(file) :
 			if item or property :
 				content = content.replace('&quot;', '"')
 				val = eval(content)
-				if len(val['label']) > 0 :
+				if 'label' in val and len(val['label']) > 0 :
 					for lang in val['label'].keys() :
 						kb.write(title + ' label {' + lang + ':' + val['label'][lang] + "} .\n")
-				if len(val['description']) > 0 :
+				if 'description' in val and len(val['description']) > 0 :
 					for lang in val['description'].keys() :
 						kb.write(title + ' description {' + lang + ':' + val['description'][lang] + "} .\n")
-				if len(val['links']) > 0 :
+				if 'links' in val and len(val['links']) > 0 :
 					for lang in val['links'].keys() :
 						kb.write(title + ' link {' + lang + ':' + val['links'][lang] + "} .\n")
-				if len(val['aliases']) > 0 :
+				if 'aliases' in val and len(val['aliases']) > 0 :
 					for lang in val['aliases'].keys() :
 						for alias in val['aliases'][lang] :
 							kb.write(title + ' alias {' + lang + ':' + alias + "} .\n")
@@ -324,7 +325,7 @@ def processfile(file) :
 					log(line)
 				else :
 					content = line[33:-8]
-		#if linecount >= 1000000 : break #XXX 
+		if linecount >= 1000000 : break #xxx
 
 kb = open('kb.txt', 'w')
 kb.write('# ' + str(lastdaily) + "\n")
