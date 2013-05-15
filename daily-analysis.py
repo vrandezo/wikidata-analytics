@@ -132,8 +132,6 @@ for daily in reversed(dailies) :
 		if urllib.urlopen('http://dumps.wikimedia.org/other/incr/wikidatawiki/' + daily + '/status.txt').read() == 'done' :
 			urllib.urlretrieve('http://dumps.wikimedia.org/other/incr/wikidatawiki/' + daily + '/wikidatawiki-' + daily + '-pages-meta-hist-incr.xml.bz2', 'pages-meta-hist-incr.xml.bz2') #xxx
 			log('Done downloading daily ' + daily)
-			if lastdaily == 0 :
-				lastdaily = daily
 		else :
 			log('Daily not done yet - download aborted')
 	os.chdir('..')
@@ -342,6 +340,7 @@ kb.write('# ' + str(lastdaily) + "\n")
 # process the dailies, starting with the newest
 files = 0	
 for daily in reversed(dailies) :
+	if lastdaily == 0 : daily = lastdaily
 	if daily == stopdaily : break
 	log('Analysing daily ' + daily)
 	os.chdir('daily' + daily)
