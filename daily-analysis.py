@@ -311,6 +311,7 @@ def processfile(file) :
 				propertycount += 1
 				propertylabelcount += len(val['label'])
 				propertydescriptioncount += len(val['description'])
+				kb.write(title + ' type ' + val['datatype'] + " .\n")
 
 		if line == '    </revision>\n' :
 			if not newrev : continue
@@ -340,7 +341,7 @@ kb.write('# ' + str(lastdaily) + "\n")
 # process the dailies, starting with the newest
 files = 0	
 for daily in reversed(dailies) :
-	if lastdaily == 0 : daily = lastdaily
+	if lastdaily == 0 : lastdaily = daily
 	if daily == stopdaily : break
 	log('Analysing daily ' + daily)
 	os.chdir('daily' + daily)
