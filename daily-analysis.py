@@ -341,7 +341,6 @@ kb.write('# ' + str(lastdaily) + "\n")
 # process the dailies, starting with the newest
 files = 0	
 for daily in reversed(dailies) :
-	if lastdaily == 0 : lastdaily = daily
 	if daily == stopdaily : break
 	log('Analysing daily ' + daily)
 	os.chdir('daily' + daily)
@@ -351,6 +350,7 @@ for daily in reversed(dailies) :
 		continue
 	file = bz2.BZ2File('pages-meta-hist-incr.xml.bz2')
 
+	if lastdaily == 0 : lastdaily = daily
 	processfile(file)
 
 	os.chdir('..')
