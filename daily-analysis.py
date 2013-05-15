@@ -223,6 +223,7 @@ def processfile(file) :
 			if property and not processedproperties[int(title[10:])] :
 				newtitle = True
 				processedproperties[int(title[10:])] = True
+				title = title[9:]
 
 		if line.startswith('      <id>') :
 			revid = line[10:-6]
