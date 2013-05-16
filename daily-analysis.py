@@ -223,7 +223,7 @@ def processfile(file) :
 			if property and not processedproperties[int(title[10:])] :
 				newtitle = True
 				processedproperties[int(title[10:])] = True
-				title = title[9:]
+				title = title[9:]less 
 
 		if line.startswith('      <id>') :
 			revid = line[10:-6]
@@ -337,7 +337,6 @@ def processfile(file) :
 		#if linecount >= 1000000 : break #xxx
 
 kb = open('kb.txt', 'w')
-kb.write('# ' + str(lastdaily) + "\n")
 
 # process the dailies, starting with the newest
 files = 0	
@@ -351,7 +350,9 @@ for daily in reversed(dailies) :
 		continue
 	file = bz2.BZ2File('pages-meta-hist-incr.xml.bz2')
 
-	if lastdaily == 0 : lastdaily = daily
+	if lastdaily == 0 :
+		lastdaily = daily
+		kb.write('# ' + str(lastdaily) + "\n")
 	processfile(file)
 
 	os.chdir('..')

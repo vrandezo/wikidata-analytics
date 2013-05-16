@@ -18,6 +18,7 @@ for line in gzip.open('data/kb.txt.gz') :
 	p = parts[1]
 	o = parts[2]
 	if not p == 'type' : continue
+	s = s[9:]
 	output.write(s + ' ' + o + "\n")
 	count += 1
 print linecount, 'lines'
