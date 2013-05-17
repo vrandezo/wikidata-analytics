@@ -352,7 +352,7 @@ for daily in reversed(dailies) :
 
 	if lastdaily == 0 :
 		lastdaily = daily
-		kb.write('# ' + str(lastdaily) + "\n")
+		kb.write('# ' + daily + "\n")
 	processfile(file)
 
 	os.chdir('..')
