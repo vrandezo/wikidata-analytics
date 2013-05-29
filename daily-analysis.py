@@ -57,6 +57,9 @@ processedrevisions.setall(0)
 processedproperties = bitarray.bitarray(2**10) # about 1 K properties
 processedproperties.setall(0)
 
+boteditsperdate = []
+humaneditsperdate = []
+
 # if there is no data directory, create one
 if not os.path.exists('data') :
 	os.makedirs('data')
@@ -184,6 +187,10 @@ def processfile(file) :
 	# General
 	global revisioncount
 	
+	global boteditsperdate
+	global humaneditsperdate
+
+	
 	# local variables
 	title = ''
 	item = False
@@ -296,12 +303,12 @@ def processfile(file) :
 						if (len(claim['q']) + len(claim['refs'])) > 0 :
 							if (len(claim['q']) > 0) :
 								for q in claim['q'] :
-									quals += '  ' + snaktotext(q) + ",\n"
+									quals += '  ' + snaktotext(q) + " ,\n"
 							if (len(claim['refs']) > 0) :
 								for ref in claim['refs'] :
 									quals += "  reference {\n"
 									for r in ref :
-										quals += '    ' + snaktotext(r) + ",\n"
+										quals += '    ' + snaktotext(r) + " ,\n"
 									quals += "  },\n"
 							quals = " (\n" + quals + ' )'
 							
@@ -324,6 +331,14 @@ def processfile(file) :
 			username = line[18:-12]
 			if username in bots:
 				botrevisioncount += 1
+				if timestamp not in boteditsperdate :
+					boteditsperdate[timestamp] = 0
+				boteditsperdate[timestamp] += 1
+			else :
+				if timestamp not in humaneditsperdate :
+					humaneditsperdate[timestamp] = 0
+				humaneditsperdate[timestamp] += 1
+
 		if line.startswith('      <timestamp>') :
 			timestamp = line[17:-23]
 
@@ -404,6 +419,8 @@ output.write('   Descriptions of properties: ' + str(propertydescriptioncount) +
 output.write('   Revisions: ' + str(revisioncount) + '<br>' + "\n")
 output.write('   Item revisions: ' + str(itemrevisioncount) + '<br>' + "\n")
 output.write('   Bot revisions: ' + str(botrevisioncount) + '<br>' + "\n")
+output.write('   Bot edits per date: ' + str(boteditsperdate) + '<br>' + "\n")
+output.write('   Human edits per date: ' + str(humaneditsperdate) + '<br>' + "\n")
 output.write('   Lines: ' + str(linecount) + '<br>' + "\n")
 output.write('   Characters: ' + str(charactercount) + '<br>' + "\n")
 output.write('   Time: ' + str(time.time() - start_time) + ' seconds<br>' + "\n")
