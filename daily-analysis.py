@@ -57,8 +57,8 @@ processedrevisions.setall(0)
 processedproperties = bitarray.bitarray(2**10) # about 1 K properties
 processedproperties.setall(0)
 
-boteditsperdate = []
-humaneditsperdate = []
+boteditsperdate = {}
+humaneditsperdate = {}
 
 # if there is no data directory, create one
 if not os.path.exists('data') :
