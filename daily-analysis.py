@@ -59,6 +59,7 @@ processedproperties.setall(0)
 
 boteditsperdate = {}
 humaneditsperdate = {}
+users = set()
 
 # if there is no data directory, create one
 if not os.path.exists('data') :
@@ -189,6 +190,7 @@ def processfile(file) :
 	
 	global boteditsperdate
 	global humaneditsperdate
+	global users
 
 	
 	# local variables
@@ -329,6 +331,7 @@ def processfile(file) :
 		if line.startswith('        <username>') :
 			if not newrev : continue
 			username = line[18:-12]
+			users.add(username)
 			if username in bots:
 				botrevisioncount += 1
 				if timestamp not in boteditsperdate :
@@ -421,6 +424,7 @@ output.write('   Item revisions: ' + str(itemrevisioncount) + '<br>' + "\n")
 output.write('   Bot revisions: ' + str(botrevisioncount) + '<br>' + "\n")
 output.write('   Bot edits per date: ' + str(boteditsperdate) + '<br>' + "\n")
 output.write('   Human edits per date: ' + str(humaneditsperdate) + '<br>' + "\n")
+output.write('   Number of different users: ' + str(len(users)) + '<br>' + "\n")
 output.write('   Lines: ' + str(linecount) + '<br>' + "\n")
 output.write('   Characters: ' + str(charactercount) + '<br>' + "\n")
 output.write('   Time: ' + str(time.time() - start_time) + ' seconds<br>' + "\n")
