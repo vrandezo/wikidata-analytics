@@ -236,17 +236,18 @@ def processfile(file) :
 				processedproperties[int(title[10:])] = True
 				title = title[9:] 
 
-		if line.startswith('      <id>') :
+		if line.startswith('      <id>') : # ids of pages have less spaces
 			revid = line[10:-6]
 			if not processedrevisions[int(revid)] :
 				newrev = True
-				processedrevisions[int(revid)] = True
 			else :
 				log(revid + ' was a double revision')
 
 		# finished a page
-		if line == '  </page>\n' :
+		if line == '    </revision>\n' :
 			if not newtitle : continue
+			processedrevisions[int(revid)] = True
+			newtitle = False
 
 			if item or property :
 				content = content.replace('&quot;', '"')
@@ -325,12 +326,12 @@ def processfile(file) :
 				propertydescriptioncount += len(val['description'])
 				kb.write(title + ' type ' + val['datatype'] + " .\n")
 
-		if line == '    </revision>\n' :
 			if not newrev : continue
 			revisioncount += 1
 			if item:
 				itemrevisioncount += 1
-		if line.startswith('        <username>') :
+
+		if line.startswith('        <username>') : # TODO does not catch IPs
 			if not newrev : continue
 			username = line[18:-12]
 			users.add(username)
@@ -354,6 +355,7 @@ def processfile(file) :
 					log(line)
 				else :
 					content = line[33:-8]
+
 		#if linecount >= 1000000 : break #xxx
 
 kb = open('kb.txt', 'w')
