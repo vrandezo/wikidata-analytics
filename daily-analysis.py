@@ -246,7 +246,8 @@ def processfile(file) :
 			if not processedrevisions[int(revid)] :
 				newrev = True
 			else :
-				log(revid + ' was a double revision')
+				#log(revid + ' was a double revision')
+				pass
 
 		# finished a page
 		if line == '    </revision>\n' :
