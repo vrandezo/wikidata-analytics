@@ -146,6 +146,8 @@ def snaktotext(snak) :
 			return 'P' + str(snak[1]) + ' Q' + str(snak[3]['numeric-id'])
 		elif snak[2] == 'string' :
 			return 'P' + str(snak[1]) + ' {' + snak[3] + '}'
+		elif snak[2] == 'time' :
+			return 'P' + str(snak[1]) + ' {' + snak[3] + '}'
 		else :
 			log(snak)
 			exit()
