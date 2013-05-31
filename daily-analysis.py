@@ -149,7 +149,7 @@ def snaktotext(snak) :
 		elif snak[2] == 'string' :
 			return 'P' + str(snak[1]) + ' {' + snak[3] + '}'
 		elif snak[2] == 'time' :
-			return 'P' + str(snak[1]) + ' {' + str(snak[3]) + '}'
+			return 'P' + str(snak[1]) + ' ' + str(snak[3])
 		else :
 			log(snak)
 			exit()
