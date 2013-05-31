@@ -4,6 +4,8 @@ import sys, bz2, time, gzip, os, urllib, re, bitarray
 # This scripts creates the knowledge base and collects a few numbers by going through
 # all dailies up to and the latest available dump. This usually runs a few hours.
 
+before = '' # put here '2013-05-01T00:00:00Z' in order to check the state at end of april
+
 def log(txt) :
 	print txt
 
@@ -187,6 +189,9 @@ def processfile(file) :
 	global propertylabelcount
 	global propertydescriptioncount
 
+	# Filter
+	global before
+	
 	# General
 	global revisioncount
 	
@@ -246,6 +251,7 @@ def processfile(file) :
 		# finished a page
 		if line == '    </revision>\n' :
 			if not newtitle : continue
+			if before != '' and timestamp > before : continue
 			processedrevisions[int(revid)] = True
 			newtitle = False
 
