@@ -253,6 +253,7 @@ def processfile(file) :
 		if line == '    </revision>\n' :
 			if not newtitle : continue
 			if before != '' and timestamp > before : continue
+			if content == '' : continue
 			processedrevisions[int(revid)] = True
 			newtitle = False
 
@@ -368,7 +369,7 @@ def processfile(file) :
 kb = open('kb.txt', 'w')
 
 # process the dailies, starting with the newest
-files = 0	
+files = 0
 for daily in reversed(dailies) :
 	if daily == stopdaily : break
 	log('Analysing daily ' + daily)
