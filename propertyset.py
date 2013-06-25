@@ -1,6 +1,6 @@
 # projects all tuples connected with a property, dropping qualifiers and references
 # needs the graph
-import sys
+import sys, gzip
 
 if len(sys.argv) < 2 :
 	print 'no property id given'
@@ -15,7 +15,7 @@ output = open('data/P' + str(propertyid) + '.txt', 'w')
 count = 0
 linecount = 0
 
-for line in open('data/graph.txt') :
+for line in gzip.open('graph.txt.gz') :
 	if line.startswith('#') :
 		output.write(line)
 		continue

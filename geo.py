@@ -1,9 +1,8 @@
-# projects the full knowledge base into a simple graph, only having
-# the connections between items
+# gets all coordinates in the main snak
 # needs kb
 import gzip
 
-output = gzip.open('graph.txt.gz', 'w')
+output = gzip.open('geo.txt.gz', 'w')
 count = 0
 linecount = 0
 for line in gzip.open('kb.txt.gz') :
@@ -13,15 +12,16 @@ for line in gzip.open('kb.txt.gz') :
 		output.write(line)
 		continue
 	if line.startswith(' ') : continue
-	parts = line.split(' ')
-	if len(parts) != 4 : continue
+	parts = line.split(' ', 2)
+	if len(parts) != 3 : continue
 	s = parts[0]
 	p = parts[1]
 	o = parts[2]
-	if not s.startswith('Q') : continue
 	if not p.startswith('P') : continue
-	if not o.startswith('Q') : continue
-	output.write(s + ' ' + p + ' ' + o + "\n")
+	if not o.startswith("{'latitude':") : continue
+	o = o[:-2]
+	o = eval(o)
+	output.write(str(o['latitude']) + ' ' + str(o['longitude']) + "\n")
 	count += 1
 print linecount, 'lines'
 print count, 'results'
