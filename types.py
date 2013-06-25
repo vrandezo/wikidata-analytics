@@ -2,10 +2,10 @@
 # needs kb
 import gzip
 
-output = open('data/types.txt', 'w')
+output = open('types.txt', 'w')
 count = 0
 linecount = 0
-for line in gzip.open('data/kb.txt.gz') :
+for line in gzip.open('kb.txt.gz') :
 	linecount += 1
 	if (linecount % 1000000) == 0 : print linecount / 1000000
 	if line.startswith('#') :
