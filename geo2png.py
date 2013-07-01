@@ -56,7 +56,7 @@ for size in settings.keys() :
 
 	with gzip.open('geo.txt.gz') as f :
 		for line in f :
-			geoy, geox = line.split()
+			geoy, geox, p, s = line.split()
 			if float(geox) > 180 or float(geox) < -180 or float(geoy) > 90 or float(geoy) < -90 :
 				print geoy, geox
 				continue

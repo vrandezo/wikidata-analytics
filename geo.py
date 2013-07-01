@@ -21,7 +21,7 @@ for line in gzip.open('kb.txt.gz') :
 	if not o.startswith("{'latitude':") : continue
 	o = o[:-2]
 	o = eval(o)
-	output.write(str(o['latitude']) + ' ' + str(o['longitude']) + "\n")
+	output.write(str(o['latitude']) + ' ' + str(o['longitude']) + ' ' + p + ' ' + s + "\n")
 	count += 1
 print linecount, 'lines'
 print count, 'results'
