@@ -1,5 +1,5 @@
 # trafo -> png
-import png, sys, gzip
+import png, gzip
 
 settings = {
 	'icon' : {
@@ -56,15 +56,16 @@ for size in settings.keys() :
 
 	with gzip.open('geo.txt.gz') as f :
 		for line in f :
-			geoy, geox, p, s = line.split()
+			if line.startswith('#') : continue
+			geoy, geox, property, subject = line.split()
 			if float(geox) > 180 or float(geox) < -180 or float(geoy) > 90 or float(geoy) < -90 :
 				print geoy, geox
 				continue
-			geox = int((float(geox) + 180.0)/361.0*settings[size]['x'])
-			geoy = abs(int((float(geoy) -  90.0)/181.0*settings[size]['y']))
-			p[geoy][geox*3] = min(p[geoy][geox*3]+settings[size]['diffr'], 255)
-			p[geoy][geox*3+1] = min(p[geoy][geox*3+1]+settings[size]['diffg'], 255)
-			p[geoy][geox*3+2] = min(p[geoy][geox*3+2]+settings[size]['diffb'], 255)
+			posx = int((float(geox) + 180.0)/361.0*settings[size]['x'])
+			posy = abs(int((float(geoy) -  90.0)/181.0*settings[size]['y']))
+			p[posy][posx*3] = min(p[posy][posx*3]+settings[size]['diffr'], 255)
+			p[posy][posx*3+1] = min(p[posy][posx*3+1]+settings[size]['diffg'], 255)
+			p[posy][posx*3+2] = min(p[posy][posx*3+2]+settings[size]['diffb'], 255)
 
 			count += 1
 			#if count > 10 : break
