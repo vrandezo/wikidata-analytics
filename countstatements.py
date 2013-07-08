@@ -28,8 +28,8 @@ for line in gzip.open('kb.txt.gz') :
 	if not o.startswith('Q') : continue
 	objects.add(o)
 
-output.write(str(linecount)) + 'lines' + "\n")
-output.write(str(count)) + 'statements' + "\n")
+output.write(str(linecount) + 'lines' + "\n")
+output.write(str(count) + 'statements' + "\n")
 output.write(str(len(subjects)), 'subjects' + "\n")
 output.write(str(len(objects)), 'objects' + "\n")
 output.write(str(len(subjects.intersection(objects))), 'nodes' + "\n")
