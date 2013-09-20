@@ -5,6 +5,8 @@ import gzip
 output = open('types.txt', 'w')
 count = 0
 linecount = 0
+pcount = {}
+ptype = {}
 for line in gzip.open('kb.txt.gz') :
 	linecount += 1
 	if (linecount % 1000000) == 0 : print linecount / 1000000
@@ -17,9 +19,20 @@ for line in gzip.open('kb.txt.gz') :
 	s = parts[0]
 	p = parts[1]
 	o = parts[2]
-	if not p == 'type' : continue
-	output.write(s + ' ' + o + "\n")
-	count += 1
+	if p.startswith('P') :
+		if p not in pcount :
+			pcount[p] = 0
+		pcount[p] += 1 
+	if p == 'type' :
+		ptype[s] = o
+		if s not in pcount :
+			pcount[s] = 0
+		count += 1
+
+for p in ptype :
+	output.write(p + ' ' + ptype[p] + ' ' + str(pcount[p]) + "\n")
+output.write('# ' + str(count) + " results\n")
+
 print linecount, 'lines'
 print count, 'results'
 output.close()

@@ -29,7 +29,7 @@ for line in gzip.open('kb.txt.gz') :
 			enlabel = o[4:-4]
 		label = o[1:-4]
 	if not p.startswith('P') : continue
-	if not o.startswith("{'latitude':") : continue
+	if not o.startswith("{u'latitude':") : continue
 	o = o[:-2]
 	o = eval(o)
 	if enlabel != '' : label = enlabel

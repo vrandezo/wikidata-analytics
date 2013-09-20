@@ -18,7 +18,7 @@ for line in gzip.open('kb.txt.gz') :
 	p = parts[1]
 	o = parts[2]
 	if not p.startswith('P') : continue
-	if not o.startswith("{'latitude':") : continue
+	if not o.startswith("{u'latitude':") : continue
 	o = o[:-2]
 	o = eval(o)
 	output.write(str(o['latitude']) + ' ' + str(o['longitude']) + ' ' + p + ' ' + s + "\n")
